@@ -1,5 +1,7 @@
 package com.bnb.common;
 
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestServiceClient {
@@ -19,5 +21,8 @@ public class RestServiceClient {
 		String resultDataString = objectMapper.writeValueAsString(restServiceVO);
 		return resultDataString;
 	}
+	
+
+	//RestTemplate, WebClient 는 기존 spring-web 에 있던 모듈을 개발 해야 함.. 위의 모들은 가짜임...
 	
 }
