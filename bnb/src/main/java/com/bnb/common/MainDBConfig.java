@@ -1,6 +1,5 @@
 package com.bnb.common;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
