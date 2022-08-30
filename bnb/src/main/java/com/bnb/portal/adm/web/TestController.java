@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bnb.common.RestServiceClient;
 import com.bnb.common.RestServiceResult;
+import com.bnb.portal.adm.entity.UserInfoEntity;
 import com.bnb.portal.adm.svc.TestService;
 import com.bnb.portal.adm.vo.UserInfoVO;
 
@@ -37,6 +38,15 @@ public class TestController {
 		
 //		return "test";
         return new RestServiceClient().setServiceData(200, "status", "debut", model);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = {"/test2"}, method = RequestMethod.GET)
+	public ResponseEntity test2() throws Exception{
+		UserInfoEntity userInfoEntity = new UserInfoEntity();
+		userInfoEntity = testService.getUserInfo("test");
+
+		return new RestServiceResult().setServiceData(200, "OK", "Success", userInfoEntity);
 	}
 	
 	@SuppressWarnings("rawtypes")

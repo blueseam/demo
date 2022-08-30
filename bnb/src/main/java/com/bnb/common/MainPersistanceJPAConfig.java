@@ -21,35 +21,47 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 public class MainPersistanceJPAConfig {
 
-	@Value("${spring.datasource.driverClassName}")
-	private String driverClassName;
-
-	@Value("${spring.datasource.url}")
-	private String url;
-	
-	@Value("${spring.datasource.username}")
-	private String userName;
-	
-	@Value("${spring.datasource.password}")
-	private String password;
+//	@Value("${spring.datasource.driverClassName}")
+//	private String driverClassName;
+//
+//	@Value("${spring.datasource.url}")
+//	private String url;
+//	
+//	@Value("${spring.datasource.username}")
+//	private String userName;
+//	
+//	@Value("${spring.datasource.password}")
+//	private String password;
+//
+//	@Bean
+//	public DataSource dataSource(){
+//	    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//	    dataSource.setDriverClassName(driverClassName);
+//	    dataSource.setUrl(url);
+//	    dataSource.setUsername(userName);
+//	    dataSource.setPassword(password);
+//	    return dataSource;
+//	}
 
 	@Bean
-	public DataSource dataSource(){
-	    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-	    dataSource.setDriverClassName(driverClassName);
-	    dataSource.setUrl(url);
-	    dataSource.setUsername(userName);
-	    dataSource.setPassword(password);
-	    return dataSource;
+	@ConfigurationProperties(prefix="spring.mainjpa.datasource")
+	public PoolProperties getJPAPoolProperties(){
+		return new PoolProperties();
 	}
 
 	@Bean
+	public DataSource getJPADataSource() {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource(getJPAPoolProperties());
+		return dataSource;
+	}
+	
+	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 	   LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-	   em.setDataSource(dataSource());
+	   em.setDataSource(getJPADataSource());
 	   em.setPackagesToScan(new String[] {"com.bnb.portal.adm.entity"});
 	   JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 	   em.setJpaVendorAdapter(vendorAdapter);
@@ -57,12 +69,12 @@ public class MainPersistanceJPAConfig {
 	   return em;
 	}
 	
-//	@Bean
-//	public PlatformTransactionManager transactionManager() {
-//	    JpaTransactionManager transactionManager = new JpaTransactionManager();
-//	    transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-//	    return transactionManager;
-//	}
+	@Bean
+	public PlatformTransactionManager transactionJPAManager() {
+	    JpaTransactionManager transactionManager = new JpaTransactionManager();
+	    transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+	    return transactionManager;
+	}
 
 	@Bean
 	public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
@@ -73,6 +85,8 @@ public class MainPersistanceJPAConfig {
 	    Properties properties = new Properties();
 	    properties.setProperty("hibernate.hbm2ddl.auto", "update");
 	    properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+	    properties.setProperty("hibernate.show_sql", "true");
+	    properties.setProperty("hibernate.format_sql", "true");
 	    return properties;
 	}
 
